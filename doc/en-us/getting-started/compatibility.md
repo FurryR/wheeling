@@ -1,7 +1,9 @@
 # Ensuring compatibility with Gandi IDE
 
 Gandi IDE and Turbowarp's extension format aren't that different from each other;
+
 So, a completely new tutorial for both is optional.
+
 However theres still a few differences that may break the compatibility, so make sure you read entire documentation before making your extension.
 
 ---
@@ -21,10 +23,12 @@ Reflect.set(window, 'tempExt', {
     extensionId: 'NameOfyourExtension', // ID of the extension. Usually the name of your extension but please only use letters.
     featured: true,
     disabled: false,
-    collaborator: 'You!' // replace it with your name here.
-    collaboratorURL: 'https://github.com/FurryR' // Optional but recommended. Replace it with your own profile or blog URL.
+    collaborator: 'You!', // replace it with your name here.
+    iconURL: 'https://example.com/icon.svg', // The cover of your extension.
+    insetIconURL: 'https://example.com/iconSmall.svg', // The icon of your extension (will be displayed on the left side of the blocks).
+    collaboratorURL: 'https://github.com/FurryR', // Optional but recommended. Replace it with your own profile or blog URL.
 
-    // The following options are used if there are multiple collaborators. Don't use collaborator and collaboratorList while using collaboratorList!
+    // The following options are used if there are multiple collaborators. Don't use collaborator while using collaboratorList!
     collaboratorList: [
       {
         collaborator: 'FurryR@GitHub',
@@ -54,6 +58,8 @@ Reflect.set(window, 'tempExt', {
 })
 ```
 
+Your extension won't be merged if there's no Simplified Chinese translation, so make sure you know a translator, or you have to translate by yourself (don't use Google translate).
+
 Those infos will be used to show extension cards like these.
 
 <details>
@@ -67,7 +73,7 @@ Those infos will be used to show extension cards like these.
 
 ## Runtime
 
-Turbowarp allows the use of `Scratch.vm.runtime` for extensions to access the runtime, while Gandi IDE requires you to use `this.runtime` via the class's constructor.
+Turbowarp allows the use of `Scratch.vm.runtime` for extensions to access the runtime, while Gandi IDE requires you to access the runtime via the class's constructor.
 
 ```js
 // ... in your extension class
@@ -79,13 +85,13 @@ class MyExtension {
 // You can now use `this.runtime` to access the runtime.
 ```
 
-Here is an method to ensure getting the runtime.
+Here is an method to ensure compatibility.
 
 ```js
 if (Scratch.vm?.runtime) {
-  Scratch.extensions.register(new YourExtension(Scratch.vm.runtime))
+  Scratch.extensions.register(new YourExtension(Scratch.vm.runtime)) // It is Turbowarp and we use Scratch.extensions.register().
 } else {
-  Reflect.set(window, 'tempExt', {}) // ...
+  Reflect.set(window, 'tempExt', {}) // It is Gandi and we use `tempExt`.
 }
 // You can now use `this.runtime` on both TW and Gandi (in your class instance).
 ```
@@ -158,7 +164,7 @@ You can either copy the code from `../utils/color.js` (it is in the repository) 
 
 ## Scratch.translate
 
-You can use `Scratch.translate()` but it requires you to add this inside your extension's class
+You can use `Scratch.translate()` directly. However it is recommended for you to add this inside your extension's class:
 
 ```js
 formatMessage(id) {
@@ -170,7 +176,7 @@ formatMessage(id) {
   }
 ```
 
-and you will need to use `this.formatMessage()` instead.
+and you can use `this.formatMessage()` to replace `Scratch.translate()`.
 
 ~~This is because `runtime.getFormatMessage()` is only available in Gandi IDE and doing `Scratch.translate()` directly is not supported by Gandi.~~
 
